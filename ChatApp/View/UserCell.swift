@@ -26,14 +26,8 @@ class UserCell: UITableViewCell {
     }
     
     private func setupNameAndProfile() {
-        let chatParnerID: String?
-        if message?.fromId == Auth.auth().currentUser?.uid {
-            chatParnerID = message?.toId
-        } else {
-            chatParnerID = message?.fromId
-        }
-        
-        if let Id = chatParnerID {
+       
+        if let Id = message?.chatParnerID() {
         let ref = Database.database().reference().child("users").child(Id)
         ref.observeSingleEvent(of: .value, with: { (snapshot) in
         if let dictionary = snapshot.value as? [String: Any] {

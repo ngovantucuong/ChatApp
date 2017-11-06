@@ -35,30 +35,51 @@ class MessageController: UITableViewController {
         
         let ref = Database.database().reference().child("user-message").child(uid)
         ref.observe(.childAdded, with: { (snapshot) in
-            let messageID = snapshot.key
-            let messageRef = Database.database().reference().child("messages").child(messageID)
-            
-            messageRef.observeSingleEvent(of: .value, with: { (snapshot) in
-                if let message = snapshot.value as? [String: Any] {
-                    let messages = Message()
-                    messages.fromId = message["fromId"] as? String
-                    messages.text = message["text"] as? String
-                    messages.timestamp = message["timestamp"] as? Int
-                    messages.toId = message["toId"] as? String
-                    
-                    if let toId = messages.toId {
-                        self.messageDictionary[toId] = messages
-                        
-                        self.messagesChat = Array(self.messageDictionary.values)
-                        self.messagesChat.sorted(by: { (message1, message2) -> Bool in
-                            return message1.timestamp! > message2.timestamp!
-                        })
-                    }
-                    
-                    self.tableView.reloadData()
-                }
+            let userID = snapshot.key
+            let messageRef = Database.database().reference().child("user-message").child(uid).child(userID)
+            messageRef.observe(.childAdded, with: { (snapshot) in
+                let messageID = snapshot.key
+                self.fetchMessageWithMessageID(messageID: messageID)
             }, withCancel: nil)
         }, withCancel: nil)
+    }
+    
+    private func fetchMessageWithMessageID(messageID: String) {
+        let messageRef = Database.database().reference().child("messages").child(messageID)
+        messageRef.observeSingleEvent(of: .value, with: { (snapshot) in
+            if let message = snapshot.value as? [String: Any] {
+                let messages = Message()
+                messages.fromId = message["fromId"] as? String
+                messages.text = message["text"] as? String
+                messages.timestamp = message["timestamp"] as? Int
+                messages.toId = message["toId"] as? String
+                
+                if let chatParner = messages.chatParnerID(){
+                    self.messageDictionary[chatParner] = messages
+                    
+                    self.messagesChat = Array(self.messageDictionary.values)
+                    //                        self.messagesChat.sorted(by: { (message1, message2) -> Bool in
+                    //                            return message1.timestamp! > message2.timestamp!
+                    //                        })
+                }
+                self.attemptReloadTable()
+            }
+        }, withCancel: nil)
+    }
+    
+    private func attemptReloadTable() {
+        self.time?.invalidate()
+        print("we just canceled our time")
+        self.time = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.handleReloadTable), userInfo: nil, repeats: false)
+        print("we load 0.1 s")
+    }
+    
+    var time: Timer?
+    @objc func handleReloadTable() {
+        DispatchQueue.main.async {
+            print("we reload table")
+            self.tableView.reloadData()
+        }
     }
     
     func observeMessage() {
@@ -97,6 +118,23 @@ class MessageController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 72
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let message = messagesChat[indexPath.row]
+        guard let chatParnert = message.chatParnerID() else { return }
+        
+        let ref = Database.database().reference().child("users").child(chatParnert)
+        ref.observeSingleEvent(of: .value, with: { (snapshot) in
+            guard let dictionary = snapshot.value as? [String: AnyObject] else { return }
+            let user = User()
+            user.toId = chatParnert
+            user.email = dictionary["email"] as? String
+            user.name = dictionary["name"] as? String
+            user.profileImageUrl = dictionary["profileImageUrl"] as? String
+            
+            self.handleChatLog(users: user)
+        }, withCancel: nil)
     }
     
     @objc func handleNewMessage() {
