@@ -1,0 +1,99 @@
+
+
+Design:
+https://www.youtube.com/watch?v=iu9cam3XYiE
+
+login with firebase:
+https://www.youtube.com/watch?v=DEVebBb7wyU
+
+Swift Delegate Pattern
+https://youtu.be/RNtkg0az_Os
+
+Auto Layout Tutorial
+https://youtu.be/synofzEkUfU
+https://youtu.be/27TFuaOpUsE?list=PL23Revp-82LI-MTPyLtvzTCDl-vJKwjlU
+
+Adaptive Layout
+https://youtu.be/9U7kyq6a834
+
+SQLite with MLDB library
+- http://www.theappguruz.com/blog/use-sqlite-database-swift
+- https://youtu.be/MXHkS1LF0qw
+
+UITableView
+https://youtu.be/I4-kjME5iP8
+https://www.youtube.com/channel/UCV_YR55Ybivvsj9qBmZmyEw
+https://youtu.be/I4-kjME5iP8
+https://youtu.be/_FyU2O0q1t4
+
+Table view segue to multiple view controller
+https://youtu.be/DNidR9sULfo
+
+UICollectionView
+https://www.raywenderlich.com/107439/uicollectionview-custom-layout-tutorial-pinterest
+https://youtu.be/2J4feOZPdl4
+https://youtu.be/rsv5TV6NV1Q?list=PL23Revp-82LKxKN9SXqQ5Nxaa1ZpYEQua
+https://youtu.be/UmowVb11xJE
+
+https://youtu.be/ebCRIlG9UDA
+https://youtu.be/kWpPlXmMWeo
+https://youtu.be/pU8eb03xvGc
+https://youtu.be/WiETQhgV2uI
+https://youtu.be/cCAfeTqsE_Y
+https://youtu.be/nPf5X5z0eA4
+
+CollectionView Segue to Multiple View Controller
+https://youtu.be/pwZCksvXGRw
+
+UISide Menu
+https://youtu.be/K89-RLzYxQM
+https://youtu.be/rafJcqqyS1E
+https://youtu.be/Tr5JjxnE8yU
+https://youtu.be/K1qrk6XOuIU
+https://youtu.be/xp6zpHACVbI
+https://youtu.be/wXCHDP9V3aM
+https://youtu.be/W8unGWYSy5s
+https://youtu.be/cMnUf5mxiWQ
+https://youtu.be/Hl_Re_KLhcY
+https://youtu.be/C7gCKUb8LDM
+
+Segmented Control
+
+Parsing JSON
+https://youtu.be/ea6_a_zbQrY
+https://youtu.be/-ddIP7NRkmY
+
+Cool Animation With Core Animation
+
+UIStackView
+https://youtu.be/ZRwZ3udgkFk
+
+Animations & Transitions - Custom Animations in iOS 
+
+UIScroll View
+https://youtu.be/0KmI8wIHqqQ
+
+Tab Bar
+
+Customizing the Nav Bar (Navigation Bar)
+https://youtu.be/C7q5pl_Agds
+
+Material Design Onboarding with Cool Animations
+https://youtu.be/G5UkS4Mrepo
+
+iOS Core Data with Swift 3
+https://youtu.be/da6W7wDh0Dw
+
+how to user SQlite DataBase || FMDB tutorial
+https://youtu.be/MXHkS1LF0qw
+
+iOS Notification 
+
+Animating Popups
+https://youtu.be/al9HLGk27Co
+
+How to Parse JSON in iOS with Swift 3
+https://youtu.be/jf6KprgG2-s
+
+UIScrollView
+https://youtu.be/8PWjo1Di620
