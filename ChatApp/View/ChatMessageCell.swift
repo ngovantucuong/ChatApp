@@ -7,15 +7,59 @@
 //
 
 import UIKit
+import AVFoundation
 
 class ChatMessageCell: UICollectionViewCell {
    
+    var message: Message?
+    
+    var chatLogController: ChatLogController?
+    
+    let playButton: UIButton = {
+        let bt = UIButton()
+        bt.translatesAutoresizingMaskIntoConstraints = false
+        let image = UIImage(named: "play")
+        bt.setImage(image, for: .normal)
+        return bt
+    }()
+    
+    let activityIndicator: UIActivityIndicatorView = {
+        let view = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.hidesWhenStopped = true
+        return view
+    }()
+    
+    var player: AVPlayer?
+    var playerlayer: AVPlayerLayer?
+    
+    @objc func handlePlayVideo() {
+        let url = NSURL(string: (message?.videoUrl)!)
+        player = AVPlayer(url: url! as URL)
+        playerlayer = AVPlayerLayer(player: player)
+        playerlayer?.frame = bubbleView.bounds
+        bubbleView.layer.addSublayer(playerlayer!)
+        playButton.isHidden = true
+        
+        player?.play()
+        activityIndicator.startAnimating()
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        player?.pause()
+        playerlayer?.removeFromSuperlayer()
+        activityIndicator.stopAnimating()
+    }
+    
     let textView: UITextView = {
         let textview = UITextView()
         textview.translatesAutoresizingMaskIntoConstraints = false
         textview.backgroundColor = UIColor.clear
         textview.textColor = UIColor.white
         textview.font = UIFont.systemFont(ofSize: 16)
+        textview.isEditable = false
         return textview
     }()
     
@@ -47,8 +91,18 @@ class ChatMessageCell: UICollectionViewCell {
         imageView.layer.masksToBounds = true
         imageView.contentMode = .scaleAspectFill
         imageView.backgroundColor = UIColor.brown
+        imageView.isUserInteractionEnabled = true
         return imageView
     }()
+    
+    @objc func handleZoomTap(uitapGesture: UITapGestureRecognizer) {
+        if message?.videoUrl != nil {
+            return
+        }
+        
+        let imageView = uitapGesture.view as? UIImageView
+        self.chatLogController?.performZoomForStartImageView(imageView: imageView!)
+    }
     
     var bubbleConstraintWidth: NSLayoutConstraint?
     var bubbleConstraintLeft: NSLayoutConstraint?
@@ -61,12 +115,26 @@ class ChatMessageCell: UICollectionViewCell {
         addSubview(textView)
         addSubview(profileImageView)
         bubbleView.addSubview(messageImageView)
+        bubbleView.addSubview(playButton)
+        bubbleView.addSubview(activityIndicator)
+        
+        playButton.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handlePlayVideo)))
+        
+        playButton.centerXAnchor.constraint(equalTo: bubbleView.centerXAnchor).isActive = true
+        playButton.centerYAnchor.constraint(equalTo: bubbleView.centerYAnchor).isActive = true
+        playButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        playButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        
+        activityIndicator.centerXAnchor.constraint(equalTo: bubbleView.centerXAnchor).isActive = true
+        activityIndicator.centerYAnchor.constraint(equalTo: bubbleView.centerYAnchor).isActive = true
+        activityIndicator.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        activityIndicator.widthAnchor.constraint(equalToConstant: 50).isActive = true
         
         messageImageView.leftAnchor.constraint(equalTo: bubbleView.leftAnchor).isActive = true
         messageImageView.topAnchor.constraint(equalTo: bubbleView.topAnchor).isActive = true
         messageImageView.widthAnchor.constraint(equalTo: bubbleView.widthAnchor).isActive = true
         messageImageView.heightAnchor.constraint(equalTo: bubbleView.heightAnchor).isActive = true
-        
+        messageImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleZoomTap)))
 //        bubbleView.addSubview(messageImageView)
 //        messageImageView.leftAnchor.constraint(equalTo: bubbleView.leftAnchor).isActive = true
 //        messageImageView.topAnchor.constraint(equalTo: bubbleView.topAnchor).isActive = true

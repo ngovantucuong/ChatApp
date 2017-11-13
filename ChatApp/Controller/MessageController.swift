@@ -24,8 +24,31 @@ class MessageController: UITableViewController {
         tableView.register(UserCell.self, forCellReuseIdentifier: cellId)
         
         checkIfUserLogIn()
+        
+        tableView.allowsMultipleSelectionDuringEditing = true
 //        titleView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(MessageController.handleChatLog(_:))))
 //        observeMessage()
+    }
+    
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let message = messagesChat[indexPath.row]
+        
+        if let chatParner = message.chatParnerID() {
+            Database.database().reference().child("user-message").child(uid).child(chatParner).removeValue(completionBlock: { (error, ref) in
+                if error != nil {
+                    print("Falil in delete data")
+                }
+                
+                self.messageDictionary.removeValue(forKey: chatParner)
+                self.tableView.reloadData()
+                
+            })
+        }
     }
     
     func observeUserMessage() {
@@ -41,14 +64,19 @@ class MessageController: UITableViewController {
                 let messageID = snapshot.key
                 self.fetchMessageWithMessageID(messageID: messageID)
             }, withCancel: nil)
+            
+            messageRef.observe(.childRemoved, with: { (snapshot) in
+                self.messageDictionary.removeValue(forKey: snapshot.key)
+                self.attemptReloadTable()
+            }, withCancel: nil)
         }, withCancel: nil)
     }
     
     private func fetchMessageWithMessageID(messageID: String) {
         let messageRef = Database.database().reference().child("messages").child(messageID)
         messageRef.observeSingleEvent(of: .value, with: { (snapshot) in
-            if let message = snapshot.value as? [String: Any] {
-                let messages = Message()
+            if let message = snapshot.value as? [String: AnyObject] {
+                let messages = Message(dictionary: message)
                 messages.fromId = message["fromId"] as? String
                 messages.text = message["text"] as? String
                 messages.timestamp = message["timestamp"] as? Int
@@ -85,8 +113,8 @@ class MessageController: UITableViewController {
     func observeMessage() {
         let ref = Database.database().reference().child("messages")
         ref.observe(.childAdded, with: { (snapshot) in
-            if let message = snapshot.value as? [String: Any] {
-                let messages = Message()
+            if let message = snapshot.value as? [String: AnyObject] {
+                let messages = Message(dictionary: message)
                 messages.fromId = message["fromId"] as? String
                 messages.text = message["text"] as? String
                 messages.timestamp = message["timestamp"] as? Int
